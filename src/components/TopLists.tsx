@@ -6,23 +6,20 @@ type ItemList = { name: string; extra?: string }[]
 export default function TopLists({ token }: { token: string }) {
   const [artists, setArtists] = useState<ItemList>([])
   const [tracks, setTracks] = useState<ItemList>([])
-  const [albums, setAlbums] = useState<ItemList>([])
   const [genres, setGenres] = useState<ItemList>([])
 
   useEffect(() => {
     let mounted = true
 
     async function load() {
-      const [a, t, al, g] = await Promise.all([
+      const [a, t, g] = await Promise.all([
         getTopArtists(token, 5),
         getTopTracks(token, 5),
-        getTopAlbums(token, 5),
         getTopGenres(token, 5)
       ])
       if (!mounted) return
       setArtists(a)
       setTracks(t)
-      setAlbums(al)
       setGenres(g)
     }
     load()
@@ -46,7 +43,6 @@ export default function TopLists({ token }: { token: string }) {
     <main className="grid">
       {box('Top Genres', genres)}
       {box('Top Artists', artists)}
-      {box('Top Albums', albums)}
       {box('Top Tracks', tracks)}
     </main>
   )

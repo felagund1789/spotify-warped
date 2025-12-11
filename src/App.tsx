@@ -7,7 +7,7 @@ export default function App() {
 
   useEffect(() => {
     // If the URL contains the Spotify callback code, handle it
-    if (window.location.pathname === '/callback') {
+    if (window.location.search.includes('code=')) {
       handleCallback().then(() => {
         const t = getAccessToken()
         setToken(t)

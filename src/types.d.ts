@@ -33,7 +33,7 @@ fully_played: boolean;
 }
 
 export interface Total {
-  href: string;
+  href: string | null;
   total: number;
 }
 
@@ -49,7 +49,7 @@ export interface Album {
   release_date: string;
   release_date_precision: string;
   restrictions: unknown;
-  type: "album";
+  type: string;
   uri: string;
   artists: Artist[];
 }
@@ -59,7 +59,7 @@ export interface Artist {
   href: string;
   id: string;
   name: string;
-  type: "artist";
+  type: string;
   uri: string;
   followers?: Total;
   genres?: string[];
@@ -85,7 +85,7 @@ export interface Track {
   popularity: number;
   preview_url: string;
   track_number: number;
-  type: "track";
+  type: string;
   uri: string;
   is_local: boolean;
 }
@@ -110,7 +110,7 @@ export interface Playlist {
   public: boolean;
   snapshot_id: string;
   tracks: Total;
-  type: "playlist";
+  type: string;
   uri: string;
 }
 
@@ -129,7 +129,7 @@ export interface Show {
   media_type: string;
   name: string;
   publisher: string;
-  type: "show";
+  type: string;
   uri: string;
   total_episodes: number;
 }
@@ -152,7 +152,7 @@ export interface Episode {
   release_date: string;
   release_date_precision: string;
   resume_point: ResumePoint;
-  type: "episode";
+  type: string;
   uri: string;
   restrictions: Restrictions;
 }
@@ -174,7 +174,7 @@ export interface AudioBook {
   name: string;
   narrators: Person[];
   publisher: string;
-  type: "audiobook";
+  type: string;
   uri: string;
   total_chapters: number;
 }

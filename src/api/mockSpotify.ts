@@ -6,6 +6,7 @@
 // Mock data for development/testing
 import mockArtists from '../data/artists';
 import mockTracks from '../data/tracks';
+import { Artist } from '../types';
 
 // Mock authentication functions (no-op implementations)
 export async function startAuthIfNeeded() {
@@ -25,20 +26,18 @@ export function logout() {
 }
 
 // Mock data functions
-export async function getTopArtists(token?: string | null, limit = 5, time_range = 'long_term') {
+export async function getTopArtists(token?: string | null, limit = 5, time_range = 'long_term'): Promise<Artist[]> {
   // Add small delay to simulate API call
   await new Promise(resolve => setTimeout(resolve, 100))
   
-  const shuffled = [...mockArtists].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, limit)
+  return mockArtists.slice(0, limit);
 }
 
 export async function getTopTracks(token?: string | null, limit = 5, time_range = 'long_term') {
   // Add small delay to simulate API call
   await new Promise(resolve => setTimeout(resolve, 100))
   
-  const shuffled = [...mockTracks].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, limit).map((t) => ({ 
+  return mockTracks.slice(0, limit).map((t) => ({ 
     name: t.name, 
     extra: t.artists?.map((a: any) => a.name).join(', ') 
   }))

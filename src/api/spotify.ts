@@ -129,14 +129,14 @@ async function fetchSpotify<T>(token: string, path: string, params?: Record<stri
   return (await r.json()) as T
 }
 
-export async function getTopArtists(token: string, limit = 5, time_range = 'long_term') {
+export async function getTopArtists(token: string, limit = 5, time_range = 'long_term'): Promise<Artist[]> {
   const data = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit, time_range })
-  return data.items.map((a) => ({ name: a.name, extra: a.genres?.slice(0, 2).join(', ') }))
+  return data.items;
 }
 
-export async function getTopTracks(token: string, limit = 5, time_range = 'long_term') {
+export async function getTopTracks(token: string, limit = 5, time_range = 'long_term'): Promise<Track[]> {
   const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { limit, time_range })
-  return data.items.map((t) => ({ name: `${t.name}`, extra: t.artists?.map((a: any) => a.name).join(', ') }))
+  return data.items;
 }
 
 /**

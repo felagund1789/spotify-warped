@@ -5,9 +5,10 @@ import ArtistList from "./ArtistList";
 import TrackList from "./TrackList";
 
 type ItemList = { name: string; extra?: string }[];
+import { Artist } from "../types";
 
 export default function TopLists({ token }: { token: string }) {
-  const [artists, setArtists] = useState<ItemList>([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
   const [tracks, setTracks] = useState<ItemList>([]);
   const [genres, setGenres] = useState<ItemList>([]);
 

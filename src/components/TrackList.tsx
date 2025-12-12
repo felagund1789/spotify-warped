@@ -34,10 +34,10 @@ export default function TrackList({ tracks }: TrackListProps) {
             />
             <div className="track-info">
               <div className="track-name">{track.name}</div>
-              <div className="artist-name">
+              <div className="track-artists">
                 {track.artists?.map(artist => artist.name).join(', ') || 'Unknown Artist'}
               </div>
-              <div className="album-name">
+              <div className="track-album">
                 {track.album?.name || 'Unknown Album'}
               </div>
             </div>

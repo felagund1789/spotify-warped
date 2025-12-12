@@ -73,7 +73,7 @@
   text-overflow: ellipsis;
 }
 
-.artist-name {
+.track-artists {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 2px;
@@ -83,7 +83,7 @@
   text-overflow: ellipsis;
 }
 
-.album-name {
+.track-album {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;

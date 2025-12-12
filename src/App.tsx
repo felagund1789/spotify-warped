@@ -3,7 +3,7 @@ import { startAuthIfNeeded, handleCallback, getAccessToken, logout } from './api
 import TopLists from './components/TopLists'
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>("mock-token")
 
   useEffect(() => {
     // If the URL contains the Spotify callback code, handle it

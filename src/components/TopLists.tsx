@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getTopArtists, getTopTracks, getTopGenres } from '../api/spotify'
+import { getTopArtists, getTopTracks, getTopGenres } from '../api/mockSpotify'
 
 type ItemList = { name: string; extra?: string }[]
 

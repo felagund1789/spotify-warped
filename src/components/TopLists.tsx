@@ -79,8 +79,8 @@ export default function TopLists({ token }: { token: string }) {
   return (
     <div className="carousel-container">
       <div className="carousel-header">
-        <h1>Spotify Warped: A Sonic Journey</h1>
-        <p>Twist through time and explore your top tunes</p>
+        <h1>Spotify Warped</h1>
+        <p>Warp through time and revisit your top tunes</p>
       </div>
       
       <div className="carousel">

@@ -79,3 +79,9 @@
   word-wrap: break-word;
   line-height: 1.2;
 }
+
+.artist-header {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #ffffff;
+}

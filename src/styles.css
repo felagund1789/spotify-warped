@@ -212,3 +212,23 @@ button{
 }
 
 .muted { color: var(--muted); font-size:0.9rem }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.25rem;
+    overflow-x: hidden;
+  }
+
+  .carousel-header h1 {
+    margin-top: 1.5rem;
+    font-size: 2rem;
+    line-height: 1.1;
+    height: auto;
+  }
+
+  .carousel-header p {
+    font-size: 1rem;
+    height: 2rem;
+  }
+}

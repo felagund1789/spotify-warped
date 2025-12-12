@@ -48,7 +48,7 @@ export interface Album {
   name: string;
   release_date: string;
   release_date_precision: string;
-  restrictions: unknown;
+  restrictions?: unknown;
   type: string;
   uri: string;
   artists: Artist[];
@@ -79,11 +79,11 @@ export interface Track {
   href: string;
   id: string;
   is_playable: boolean;
-  linked_from: unknown;
-  restrictions: Restrictions;
+  linked_from?: unknown;
+  restrictions?: Restrictions;
   name: string;
   popularity: number;
-  preview_url: string;
+  preview_url: string | null;
   track_number: number;
   type: string;
   uri: string;

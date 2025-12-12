@@ -7,6 +7,8 @@
  * NOTE: This is a development starter. For production, implement secure token refresh and storage.
  */
 
+import { Artist, Track } from "../types"
+
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
 const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI
 const SCOPES = (import.meta.env.VITE_SPOTIFY_SCOPES || 'user-top-read').split(' ')
@@ -127,26 +129,21 @@ async function fetchSpotify<T>(token: string, path: string, params?: Record<stri
   return (await r.json()) as T
 }
 
-export async function getTopArtists(token: string, limit = 5) {
-  const data = await fetchSpotify<{ items: any[] }>(token, 'me/top/artists', { limit })
+export async function getTopArtists(token: string, limit = 5, time_range = 'long_term') {
+  const data = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit, time_range })
   return data.items.map((a) => ({ name: a.name, extra: a.genres?.slice(0, 2).join(', ') }))
 }
 
-export async function getTopTracks(token: string, limit = 5) {
-  const data = await fetchSpotify<{ items: any[] }>(token, 'me/top/tracks', { limit })
+export async function getTopTracks(token: string, limit = 5, time_range = 'long_term') {
+  const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { limit, time_range })
   return data.items.map((t) => ({ name: `${t.name}`, extra: t.artists?.map((a: any) => a.name).join(', ') }))
-}
-
-export async function getTopAlbums(token: string, limit = 5) {
-  const data = await fetchSpotify<{ items: any[] }>(token, 'me/top/albums', { limit })
-  return data.items.map((al) => ({ name: al.name, extra: al.artists?.map((a: any) => a.name).join(', ') }))
 }
 
 /**
  * Aggregate genres from top artists and return top N genres by count
  */
-export async function getTopGenres(token: string, limit = 5) {
-  const artistsData = await fetchSpotify<{ items: any[] }>(token, 'me/top/artists', { limit: 50 })
+export async function getTopGenres(token: string, limit = 5, time_range = 'long_term') {
+  const artistsData = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit: 50, time_range })
   const counts: Record<string, number> = {}
   for (const artist of artistsData.items) {
     for (const g of artist.genres || []) {

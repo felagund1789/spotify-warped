@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getTopArtists, getTopTracks, getTopAlbums, getTopGenres } from '../api/spotify'
+import { getTopArtists, getTopTracks, getTopGenres } from '../api/spotify'
 
 type ItemList = { name: string; extra?: string }[]
 

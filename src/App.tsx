@@ -27,20 +27,18 @@ export default function App() {
 
   return (
     <div className="container">
-      <header>
-        <h1>Spotify Warped</h1>
-        {!token ? (
-          <div>
-            <p>Sign in with Spotify to see your top 5 genres, artists, albums, and tracks.</p>
-            <button onClick={() => startAuthIfNeeded()}>Sign in with Spotify</button>
-          </div>
-        ) : (
-          <div>
-            <button onClick={() => { logout(); setToken(null); }}>Sign out</button>
-            <TopLists token={token} />
-          </div>
-        )}
-      </header>
+      {!token ? (
+        <div className="auth-section">
+          <h1>Spotify Warped</h1>
+          <p>Sign in with Spotify to see your top 5 genres, artists, albums, and tracks.</p>
+          <button onClick={() => startAuthIfNeeded()}>Sign in with Spotify</button>
+        </div>
+      ) : (
+        <div className="app-content">
+          <button className="logout-btn" onClick={() => { logout(); setToken(null); }}>Sign out</button>
+          <TopLists token={token} />
+        </div>
+      )}
     </div>
   )
 }

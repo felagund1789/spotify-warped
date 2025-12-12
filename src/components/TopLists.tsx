@@ -1,49 +1,41 @@
-import React, { useEffect, useState } from 'react'
-import { getTopArtists, getTopTracks, getTopGenres } from '../api/mockSpotify'
+import React, { useEffect, useState } from "react";
+import { getTopArtists, getTopTracks, getTopGenres } from "../api/mockSpotify";
+import GenreList from "./GenreList";
+import ArtistList from "./ArtistList";
+import TrackList from "./TrackList";
 
-type ItemList = { name: string; extra?: string }[]
+type ItemList = { name: string; extra?: string }[];
 
 export default function TopLists({ token }: { token: string }) {
-  const [artists, setArtists] = useState<ItemList>([])
-  const [tracks, setTracks] = useState<ItemList>([])
-  const [genres, setGenres] = useState<ItemList>([])
+  const [artists, setArtists] = useState<ItemList>([]);
+  const [tracks, setTracks] = useState<ItemList>([]);
+  const [genres, setGenres] = useState<ItemList>([]);
 
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
 
     async function load() {
       const [a, t, g] = await Promise.all([
         getTopArtists(token, 5),
         getTopTracks(token, 5),
-        getTopGenres(token, 5)
-      ])
-      if (!mounted) return
-      setArtists(a)
-      setTracks(t)
-      setGenres(g)
+        getTopGenres(token, 5),
+      ]);
+      if (!mounted) return;
+      setArtists(a);
+      setTracks(t);
+      setGenres(g);
     }
-    load()
-    return () => { mounted = false }
-  }, [token])
-
-  const box = (title: string, items: ItemList) => (
-    <section className="box">
-      <h2>{title}</h2>
-      <ol>
-        {items.map((it, i) => (
-          <li key={i}>
-            <strong>{it.name}</strong> {it.extra ? <span className="muted"> — {it.extra}</span> : null}
-          </li>
-        ))}
-      </ol>
-    </section>
-  )
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [token]);
 
   return (
     <main className="grid">
-      {box('Top Genres', genres)}
-      {box('Top Artists', artists)}
-      {box('Top Tracks', tracks)}
+      <GenreList genres={genres} />
+      <ArtistList artists={artists} />
+      <TrackList tracks={tracks} />
     </main>
-  )
+  );
 }

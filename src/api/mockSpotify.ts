@@ -30,10 +30,7 @@ export async function getTopArtists(token?: string | null, limit = 5, time_range
   await new Promise(resolve => setTimeout(resolve, 100))
   
   const shuffled = [...mockArtists].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, limit).map((a) => ({ 
-    name: a.name, 
-    extra: a.genres?.slice(0, 2).join(', ') 
-  }))
+  return shuffled.slice(0, limit)
 }
 
 export async function getTopTracks(token?: string | null, limit = 5, time_range = 'long_term') {

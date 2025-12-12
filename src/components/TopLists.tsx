@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getTopArtists, getTopTracks, getTopGenres } from "../api/mockSpotify";
+import { getTopArtists, getTopTracks, getTopGenres } from "../api/spotify";
 import GenreList from "./GenreList";
 import ArtistList from "./ArtistList";
 import TrackList from "./TrackList";

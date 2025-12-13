@@ -1,21 +1,24 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getTopArtists, getTopTracks, getTopGenres } from "../api/spotify";
+import { getTopArtists, getTopTracks, getTopGenres, getTopAlbums } from "../api/spotify";
 import GenreList from "./GenreList";
 import ArtistList from "./ArtistList";
 import TrackList from "./TrackList";
+import AlbumList from "./AlbumList";
 
 type ItemList = { name: string; extra?: string }[];
-import { Artist, Track } from "../types";
+import { Artist, Track, Album } from "../types";
 
 export default function TopLists({ token }: { token: string }) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
   const [genres, setGenres] = useState<ItemList>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const components = [
     { component: <GenreList genres={genres} />, name: "Genres" },
     { component: <ArtistList artists={artists} />, name: "Artists" },
+    { component: <AlbumList albums={albums} />, name: "Albums" },
     { component: <TrackList tracks={tracks} />, name: "Tracks" }
   ];
 
@@ -23,14 +26,16 @@ export default function TopLists({ token }: { token: string }) {
     let mounted = true;
 
     async function load() {
-      const [a, t, g] = await Promise.all([
+      const [a, t, al, g] = await Promise.all([
         getTopArtists(token, 5),
         getTopTracks(token, 5),
+        getTopAlbums(token, 5),
         getTopGenres(token, 5),
       ]);
       if (!mounted) return;
       setArtists(a);
       setTracks(t);
+      setAlbums(al);
       setGenres(g);
     }
     load();

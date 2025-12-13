@@ -4,6 +4,7 @@ import GenreList from "./GenreList";
 import ArtistList from "./ArtistList";
 import TrackList from "./TrackList";
 import AlbumList from "./AlbumList";
+import WarpLoading from "./WarpLoading";
 
 type ItemList = { name: string; extra?: string }[];
 import { Artist, Track, Album } from "../types";
@@ -14,6 +15,7 @@ export default function TopLists({ token }: { token: string }) {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [genres, setGenres] = useState<ItemList>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const components = [
     { component: <GenreList genres={genres} />, name: "Genres" },
@@ -22,21 +24,36 @@ export default function TopLists({ token }: { token: string }) {
     { component: <TrackList tracks={tracks} />, name: "Tracks" }
   ];
 
+  // Check if all data is loaded
+  const isDataReady = artists.length > 0 && tracks.length > 0 && albums.length > 0 && genres.length > 0;
+
   useEffect(() => {
     let mounted = true;
+    setIsLoading(true);
 
     async function load() {
-      const [a, t, al, g] = await Promise.all([
-        getTopArtists(token, 5),
-        getTopTracks(token, 5),
-        getTopAlbums(token, 5),
-        getTopGenres(token, 5),
-      ]);
-      if (!mounted) return;
-      setArtists(a);
-      setTracks(t);
-      setAlbums(al);
-      setGenres(g);
+      try {
+        const [a, t, al, g] = await Promise.all([
+          getTopArtists(token, 5),
+          getTopTracks(token, 5),
+          getTopAlbums(token, 5),
+          getTopGenres(token, 5),
+        ]);
+        if (!mounted) return;
+        setArtists(a);
+        setTracks(t);
+        setAlbums(al);
+        setGenres(g);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        if (mounted) {
+          // Add a small delay to show the loading effect
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1000);
+        }
+      }
     }
     load();
     return () => {
@@ -88,34 +105,40 @@ export default function TopLists({ token }: { token: string }) {
         <p>Warp through time and revisit your top tunes</p>
       </div>
       
-      <div className="carousel">
-        <div className="carousel-track">
-          {components.map((item, index) => (
-            <div
-              key={index}
-              className={`carousel-item ${getItemPosition(index)}`}
-              onClick={() => navigateCarousel(index)}
-            >
-              {item.component}
+      {isLoading || !isDataReady ? (
+        <WarpLoading />
+      ) : (
+        <>
+          <div className="carousel">
+            <div className="carousel-track">
+              {components.map((item, index) => (
+                <div
+                  key={index}
+                  className={`carousel-item ${getItemPosition(index)}`}
+                  onClick={() => navigateCarousel(index)}
+                >
+                  {item.component}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-      
-      <div className="carousel-navigation">
-        {components.map((item, index) => (
-          <button
-            key={index}
-            className={`nav-button ${activeIndex === index ? 'active' : ''}`}
-            onClick={() => navigateCarousel(index)}
-          >
-            {item.name}
-          </button>
-        ))}
-      </div>
-      <div className="keyboard-hint">
-        Use ← → arrow keys or click to navigate
-      </div>
+          </div>
+          
+          <div className="carousel-navigation">
+            {components.map((item, index) => (
+              <button
+                key={index}
+                className={`nav-button ${activeIndex === index ? 'active' : ''}`}
+                onClick={() => navigateCarousel(index)}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+          <div className="keyboard-hint">
+            Use ← → arrow keys or click to navigate
+          </div>
+        </>
+      )}
     </div>
   );
 }

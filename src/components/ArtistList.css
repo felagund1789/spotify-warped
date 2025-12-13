@@ -23,6 +23,11 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
+.artist-card:focus {
+  outline: 2px solid #1db954;
+  outline-offset: 2px;
+}
+
 .artist-card:nth-child(1) {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }

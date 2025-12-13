@@ -20,7 +20,19 @@ export default function ArtistList({ artists }: ArtistListProps) {
       <h2 className="artist-header">🎤 Top Artists</h2>
       <div className="artist-grid">
         {artists.map((artist, i) => (
-          <div key={i} className="artist-card">
+          <div 
+            key={i} 
+            className="artist-card"
+            onClick={() => window.open(artist.external_urls?.spotify, '_blank', 'noopener,noreferrer')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                window.open(artist.external_urls?.spotify, '_blank', 'noopener,noreferrer')
+              }
+            }}
+          >
             <img 
               src={getAvatarUrl(artist.name, artist.images)} 
               alt={artist.name}

@@ -26,7 +26,19 @@ export default function TrackList({ tracks }: TrackListProps) {
       <h2 className="track-header">🎵 Top Tracks</h2>
       <div className="track-grid">
         {tracks.map((track, i) => (
-          <div key={i} className="track-card">
+          <div 
+            key={i} 
+            className="track-card"
+            onClick={() => window.open(track.external_urls?.spotify, '_blank', 'noopener,noreferrer')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                window.open(track.external_urls?.spotify, '_blank', 'noopener,noreferrer')
+              }
+            }}
+          >
             <img 
               src={getAlbumImage(track)}
               alt={`${track.album?.name} cover`}

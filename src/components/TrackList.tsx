@@ -1,5 +1,6 @@
 import React from 'react'
 import { Track } from '../types'
+import ShareButton from './ShareButton'
 import './TrackList.css'
 
 interface TrackListProps {
@@ -23,7 +24,15 @@ export default function TrackList({ tracks }: TrackListProps) {
 
   return (
     <section className="box">
-      <h2 className="track-header">🎵 Top Tracks</h2>
+      <div className="track-header-container">
+        <h2 className="track-header">🎵 Top Tracks</h2>
+        <ShareButton 
+          data={{
+            type: 'tracks',
+            items: tracks
+          }}
+        />
+      </div>
       <div className="track-grid">
         {tracks.map((track, i) => (
           <div 

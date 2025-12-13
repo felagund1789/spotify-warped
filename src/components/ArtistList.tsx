@@ -1,5 +1,6 @@
 import React from 'react'
 import { Artist } from '../types'
+import ShareButton from './ShareButton'
 import './ArtistList.css'
 
 interface ArtistListProps {
@@ -17,7 +18,15 @@ export default function ArtistList({ artists }: ArtistListProps) {
 
   return (
     <section className="box">
-      <h2 className="artist-header">🎤 Top Artists</h2>
+      <div className="artist-header-container">
+        <h2 className="artist-header">🎤 Top Artists</h2>
+        <ShareButton 
+          data={{
+            type: 'artists',
+            items: artists
+          }}
+        />
+      </div>
       <div className="artist-grid">
         {artists.map((artist, i) => (
           <div 

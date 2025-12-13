@@ -1,4 +1,5 @@
 import React from 'react'
+import ShareButton from './ShareButton'
 import './GenreList.css'
 
 interface Genre {
@@ -13,7 +14,15 @@ interface GenreListProps {
 export default function GenreList({ genres }: GenreListProps) {
   return (
     <section className="box">
-      <h2 className="genre-header">🎵 Top Genres</h2>
+      <div className="genre-header-container">
+        <h2 className="genre-header">🎶 Top Genres</h2>
+        <ShareButton 
+          data={{
+            type: 'genres',
+            items: genres
+          }}
+        />
+      </div>
       <div className="genre-grid">
         {genres.map((genre, i) => (
           <div key={i} className="genre-card">

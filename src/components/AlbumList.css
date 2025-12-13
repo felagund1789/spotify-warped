@@ -1,3 +1,16 @@
+.album-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.album-header {
+  margin: 0;
+  text-align: left;
+  color: #ffffff;
+}
+
 .album-grid {
   display: grid;
   gap: 12px;
@@ -97,9 +110,16 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-.album-header {
+.album-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
-  text-align: center;
+}
+
+.album-header {
+  margin: 0;
+  text-align: left;
   color: #ffffff;
 }
 

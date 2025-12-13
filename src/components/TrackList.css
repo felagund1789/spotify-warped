@@ -1,3 +1,16 @@
+.track-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.track-header {
+  margin: 0;
+  text-align: left;
+  color: #ffffff;
+}
+
 .track-grid {
   display: grid;
   gap: 12px;

@@ -1,3 +1,16 @@
+.genre-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.genre-header {
+  margin: 0;
+  text-align: left;
+  color: #ffffff;
+}
+
 .genre-grid {
   display: grid;
   gap: 12px;

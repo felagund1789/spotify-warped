@@ -90,9 +90,16 @@
   line-height: 1.2;
 }
 
-.artist-header {
+.artist-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
-  text-align: center;
+}
+
+.artist-header {
+  margin: 0;
+  text-align: left;
   color: #ffffff;
 }
 

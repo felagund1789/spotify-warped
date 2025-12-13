@@ -1,5 +1,6 @@
 import React from 'react'
 import { Album } from '../types'
+import ShareButton from './ShareButton'
 import './AlbumList.css'
 
 interface AlbumListProps {
@@ -25,7 +26,15 @@ export default function AlbumList({ albums }: AlbumListProps) {
 
   return (
     <section className="box">
-      <h2 className="album-header">💿 Top Albums</h2>
+      <div className="album-header-container">
+        <h2 className="album-header">💿 Top Albums</h2>
+        <ShareButton 
+          data={{
+            type: 'albums',
+            items: albums
+          }}
+        />
+      </div>
       <div className="album-grid">
         {albums.map((album, i) => (
           <div 

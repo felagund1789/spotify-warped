@@ -7,7 +7,7 @@
  * NOTE: This is a development starter. For production, implement secure token refresh and storage.
  */
 
-import { Artist, Track } from "../types"
+import { Artist, Track, Album } from "../types"
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
 const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI
@@ -152,4 +152,112 @@ export async function getTopGenres(token: string, limit = 5, time_range = 'long_
   }
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit)
   return sorted.map(([name, c]) => ({ name, extra: `${c} artist${c > 1 ? 's' : ''}` }))
+}
+
+// Storage for cached top tracks
+let cachedTopTracks: Track[] | null = null
+let cachingInProgress = false
+
+/**
+ * Fetches and caches the user's top N tracks by making 10 API calls (50 tracks each)
+ * This method can be called once and the tracks will be stored for use by other methods
+ */
+export async function getCachedTracks(token: string, limit = 500, time_range = 'long_term'): Promise<Track[]> {
+  // Return cached data if available
+  if (cachedTopTracks) {
+    return cachedTopTracks
+  }
+
+  // If already caching, wait for completion
+  if (cachingInProgress) {
+    while (cachingInProgress) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    return cachedTopTracks || []
+  }
+
+  cachingInProgress = true
+  const allTracks: Track[] = []
+  
+  try {
+    console.log('Fetching top  tracks...')
+    
+    // Fetch K pages of 50 tracks each
+    for (let page = 0; page < Math.ceil(limit / 50); page++) {
+      const offset = page * 50
+      console.log(`Fetching tracks ${offset + 1}-${offset + 50}...`)
+      
+      const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { 
+        limit: 50, 
+        offset, 
+        time_range 
+      })
+      
+      allTracks.push(...data.items)
+      
+      // If we get fewer than 50 tracks, we've reached the end
+      if (data.items.length < 50) {
+        console.log(`Reached end of tracks at ${allTracks.length} total tracks`)
+        break
+      }
+      
+      // Add a small delay between requests to be respectful to the API
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    
+    cachedTopTracks = allTracks
+    console.log(`Successfully cached ${allTracks.length} top tracks`)
+    
+  } catch (error) {
+    console.error('Error fetching top tracks:', error)
+    throw error
+  } finally {
+    cachingInProgress = false
+  }
+  
+  return cachedTopTracks
+}
+
+/**
+ * Clear the cached tracks (useful for refreshing data)
+ */
+export function clearTracksCache(): void {
+  cachedTopTracks = null
+}
+
+/**
+ * Get top albums by aggregating album data from the top 500 tracks
+ * Returns the 5 most frequent albums based on track count
+ */
+export async function getTopAlbums(token: string, limit = 5, time_range = 'long_term'): Promise<Album[]> {
+  // Get the cached top tracks (will fetch if not cached)
+  const tracks = await getCachedTracks(token, 500, time_range)
+  
+  // Count album occurrences and track album data
+  const albumCounts: Record<string, { album: Album; count: number }> = {}
+  
+  for (const track of tracks) {
+    if (track.album && track.album.id) {
+      const albumId = track.album.id
+      
+      if (albumCounts[albumId]) {
+        albumCounts[albumId].count++
+      } else {
+        albumCounts[albumId] = {
+          album: track.album,
+          count: 1
+        }
+      }
+    }
+  }
+  
+  // Sort albums by track count (descending) and return top albums
+  const sortedAlbums = Object.values(albumCounts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit)
+    .map(entry => entry.album)
+  
+  console.log(`Found ${Object.keys(albumCounts).length} unique albums, returning top ${sortedAlbums.length}`)
+  
+  return sortedAlbums
 }

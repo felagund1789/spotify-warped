@@ -18,10 +18,10 @@ export default function TopLists({ token }: { token: string }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const components = [
-    { component: <GenreList genres={genres} />, name: "Genres" },
     { component: <ArtistList artists={artists} />, name: "Artists" },
     { component: <AlbumList albums={albums} />, name: "Albums" },
-    { component: <TrackList tracks={tracks} />, name: "Tracks" }
+    { component: <TrackList tracks={tracks} />, name: "Tracks" },
+    { component: <GenreList genres={genres} />, name: "Genres" }
   ];
 
   // Check if all data is loaded

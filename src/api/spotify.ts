@@ -16,7 +16,9 @@ const SCOPES = (import.meta.env.VITE_SPOTIFY_SCOPES || 'user-top-read').split(' 
 const STORAGE = {
   accessTokenKey: 'sw_access_token',
   expiresAtKey: 'sw_expires_at',
-  pkceVerifierKey: 'sw_pkce_verifier'
+  pkceVerifierKey: 'sw_pkce_verifier',
+  cachedTracksKey: 'sw_cached_tracks',
+  tracksTimestampKey: 'sw_tracks_timestamp'
 }
 
 function base64URLEncode(str: ArrayBuffer) {
@@ -158,13 +160,72 @@ export async function getTopGenres(token: string, limit = 5, time_range = 'long_
 let cachedTopTracks: Track[] | null = null
 let cachingInProgress = false
 
+// Cache expiration time (24 hours)
+const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000
+
 /**
- * Fetches and caches the user's top N tracks by making 10 API calls (50 tracks each)
+ * Load cached tracks from localStorage if available and not expired
+ */
+function loadCachedTracksFromStorage(): Track[] | null {
+  try {
+    const tracksData = localStorage.getItem(STORAGE.cachedTracksKey)
+    const timestampStr = localStorage.getItem(STORAGE.tracksTimestampKey)
+    
+    if (!tracksData || !timestampStr) {
+      return null
+    }
+    
+    const timestamp = Number(timestampStr)
+    const now = Date.now()
+    
+    // Check if cache is expired
+    if (now - timestamp > CACHE_EXPIRATION_MS) {
+      console.log('Cached tracks expired, will fetch fresh data')
+      localStorage.removeItem(STORAGE.cachedTracksKey)
+      localStorage.removeItem(STORAGE.tracksTimestampKey)
+      return null
+    }
+    
+    const tracks = JSON.parse(tracksData) as Track[]
+    console.log(`Loaded ${tracks.length} cached tracks from localStorage`)
+    return tracks
+    
+  } catch (error) {
+    console.error('Error loading cached tracks from localStorage:', error)
+    localStorage.removeItem(STORAGE.cachedTracksKey)
+    localStorage.removeItem(STORAGE.tracksTimestampKey)
+    return null
+  }
+}
+
+/**
+ * Save tracks to localStorage
+ */
+function saveCachedTracksToStorage(tracks: Track[]): void {
+  try {
+    localStorage.setItem(STORAGE.cachedTracksKey, JSON.stringify(tracks))
+    localStorage.setItem(STORAGE.tracksTimestampKey, String(Date.now()))
+    console.log(`Saved ${tracks.length} tracks to localStorage cache`)
+  } catch (error) {
+    console.error('Error saving tracks to localStorage:', error)
+    // If storage is full or fails, continue without caching
+  }
+}
+
+/**
+ * Fetches and caches the user's top N tracks by making API calls or loading from cache
  * This method can be called once and the tracks will be stored for use by other methods
  */
 export async function getCachedTracks(token: string, limit = 500, time_range = 'long_term'): Promise<Track[]> {
-  // Return cached data if available
+  // Return in-memory cached data if available
   if (cachedTopTracks) {
+    return cachedTopTracks
+  }
+
+  // Try to load from localStorage first
+  const storageCache = loadCachedTracksFromStorage()
+  if (storageCache && storageCache.length > 0) {
+    cachedTopTracks = storageCache
     return cachedTopTracks
   }
 
@@ -180,24 +241,29 @@ export async function getCachedTracks(token: string, limit = 500, time_range = '
   const allTracks: Track[] = []
   
   try {
-    console.log('Fetching top  tracks...')
+    console.log(`Fetching top ${limit} tracks from Spotify API...`)
     
     // Fetch K pages of 50 tracks each
     for (let page = 0; page < Math.ceil(limit / 50); page++) {
       const offset = page * 50
-      console.log(`Fetching tracks ${offset + 1}-${offset + 50}...`)
+      console.log(`Fetching tracks ${offset + 1}-${Math.min(offset + 50, limit)}...`)
       
       const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { 
-        limit: 50, 
+        limit: Math.min(50, limit - offset), 
         offset, 
         time_range 
       })
       
       allTracks.push(...data.items)
       
-      // If we get fewer than 50 tracks, we've reached the end
-      if (data.items.length < 50) {
+      // If we get fewer tracks than requested, we've reached the end
+      if (data.items.length < Math.min(50, limit - offset)) {
         console.log(`Reached end of tracks at ${allTracks.length} total tracks`)
+        break
+      }
+      
+      // If we've fetched the requested limit, stop
+      if (allTracks.length >= limit) {
         break
       }
       
@@ -206,6 +272,10 @@ export async function getCachedTracks(token: string, limit = 500, time_range = '
     }
     
     cachedTopTracks = allTracks
+    
+    // Save to localStorage for future sessions
+    saveCachedTracksToStorage(allTracks)
+    
     console.log(`Successfully cached ${allTracks.length} top tracks`)
     
   } catch (error) {
@@ -223,6 +293,9 @@ export async function getCachedTracks(token: string, limit = 500, time_range = '
  */
 export function clearTracksCache(): void {
   cachedTopTracks = null
+  localStorage.removeItem(STORAGE.cachedTracksKey)
+  localStorage.removeItem(STORAGE.tracksTimestampKey)
+  console.log('Cleared tracks cache from memory and localStorage')
 }
 
 /**

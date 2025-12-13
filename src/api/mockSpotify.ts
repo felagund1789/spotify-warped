@@ -6,7 +6,7 @@
 // Mock data for development/testing
 import mockArtists from "../data/artists";
 import mockTracks from "../data/tracks";
-import { Artist } from "../types";
+import { Artist, Album } from "../types";
 
 // Mock authentication functions (no-op implementations)
 export async function startAuthIfNeeded() {
@@ -70,4 +70,43 @@ export async function getTopGenres(
     name,
     extra: `${c} artist${c > 1 ? "s" : ""}`,
   }));
+}
+
+/**
+ * Get top albums by aggregating album data from mock tracks
+ * Returns the most frequent albums based on track count
+ */
+export async function getTopAlbums(
+  token?: string | null,
+  limit = 5,
+  time_range = "long_term"
+): Promise<Album[]> {
+  // Add small delay to simulate API call
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  
+  // Count album occurrences and track album data
+  const albumCounts: Record<string, { album: Album; count: number }> = {};
+  
+  for (const track of mockTracks) {
+    if (track.album && track.album.id) {
+      const albumId = track.album.id;
+      
+      if (albumCounts[albumId]) {
+        albumCounts[albumId].count++;
+      } else {
+        albumCounts[albumId] = {
+          album: track.album,
+          count: 1
+        };
+      }
+    }
+  }
+  
+  // Sort albums by track count (descending) and return top albums
+  const sortedAlbums = Object.values(albumCounts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit)
+    .map(entry => entry.album);
+  
+  return sortedAlbums;
 }

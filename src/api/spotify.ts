@@ -162,7 +162,7 @@ let cachingInProgress = false
  * Fetches and caches the user's top N tracks by making 10 API calls (50 tracks each)
  * This method can be called once and the tracks will be stored for use by other methods
  */
-export async function cacheTopTracks(token: string, limit = 500, time_range = 'long_term'): Promise<Track[]> {
+export async function getCachedTracks(token: string, limit = 500, time_range = 'long_term'): Promise<Track[]> {
   // Return cached data if available
   if (cachedTopTracks) {
     return cachedTopTracks
@@ -223,4 +223,41 @@ export async function cacheTopTracks(token: string, limit = 500, time_range = 'l
  */
 export function clearTracksCache(): void {
   cachedTopTracks = null
+}
+
+/**
+ * Get top albums by aggregating album data from the top 500 tracks
+ * Returns the 5 most frequent albums based on track count
+ */
+export async function getTopAlbums(token: string, limit = 5, time_range = 'long_term'): Promise<Album[]> {
+  // Get the cached top tracks (will fetch if not cached)
+  const tracks = await getCachedTracks(token, 500, time_range)
+  
+  // Count album occurrences and track album data
+  const albumCounts: Record<string, { album: Album; count: number }> = {}
+  
+  for (const track of tracks) {
+    if (track.album && track.album.id) {
+      const albumId = track.album.id
+      
+      if (albumCounts[albumId]) {
+        albumCounts[albumId].count++
+      } else {
+        albumCounts[albumId] = {
+          album: track.album,
+          count: 1
+        }
+      }
+    }
+  }
+  
+  // Sort albums by track count (descending) and return top albums
+  const sortedAlbums = Object.values(albumCounts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit)
+    .map(entry => entry.album)
+  
+  console.log(`Found ${Object.keys(albumCounts).length} unique albums, returning top ${sortedAlbums.length}`)
+  
+  return sortedAlbums
 }

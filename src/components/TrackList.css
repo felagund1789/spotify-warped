@@ -1,7 +1,7 @@
 .track-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .track-card {
@@ -13,8 +13,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 16px;
+  padding: 16px;
 }
 
 .track-card:hover {
@@ -57,6 +57,7 @@
   object-fit: cover;
   border-radius: 8px;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .track-info {
@@ -68,8 +69,8 @@
 }
 
 .track-name {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: bold;
   color: white;
   margin-bottom: 4px;
   line-height: 1.2;
@@ -109,4 +110,36 @@
   margin-bottom: 24px;
   text-align: center;
   color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .track-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .track-card {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .album-image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .track-name {
+    font-size: 1rem;
+  }
+  
+  .track-artists {
+    font-size: 0.8rem;
+  }
+  
+  .track-album {
+    font-size: 0.7rem;
+  }
+  
+  .track-duration {
+    font-size: 0.75rem;
+  }
 }

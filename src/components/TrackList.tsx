@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Track } from '../types'
 import ShareButton from './ShareButton'
 import './TrackList.css'
@@ -8,6 +8,8 @@ interface TrackListProps {
 }
 
 export default function TrackList({ tracks }: TrackListProps) {
+  const cardRef = useRef<HTMLElement>(null);
+  
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000)
     const seconds = Math.floor((ms % 60000) / 1000)
@@ -23,7 +25,7 @@ export default function TrackList({ tracks }: TrackListProps) {
   }
 
   return (
-    <section className="box">
+    <section className="box" ref={cardRef}>
       <div className="track-header-container">
         <h2 className="track-header">🎵 Top Tracks</h2>
         <ShareButton 
@@ -31,6 +33,7 @@ export default function TrackList({ tracks }: TrackListProps) {
             type: 'tracks',
             items: tracks
           }}
+          cardElement={cardRef}
         />
       </div>
       <div className="track-grid">

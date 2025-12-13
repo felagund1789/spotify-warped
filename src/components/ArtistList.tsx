@@ -1,13 +1,15 @@
-import React from 'react'
-import { Artist } from '../types'
-import ShareButton from './ShareButton'
-import './ArtistList.css'
+import React, { useRef } from 'react';
+import { Artist } from '../types';
+import ShareButton from './ShareButton';
+import './ArtistList.css';
 
 interface ArtistListProps {
   artists: Artist[]
 }
 
 export default function ArtistList({ artists }: ArtistListProps) {
+  const cardRef = useRef<HTMLElement>(null);
+  
   // Generate placeholder avatar based on artist name if no image available
   const getAvatarUrl = (name: string, images?: { url: string }[]) => {
     if (images && images.length > 0) {
@@ -17,7 +19,7 @@ export default function ArtistList({ artists }: ArtistListProps) {
   }
 
   return (
-    <section className="box">
+    <section className="box" ref={cardRef}>
       <div className="artist-header-container">
         <h2 className="artist-header">🎤 Top Artists</h2>
         <ShareButton 
@@ -25,6 +27,7 @@ export default function ArtistList({ artists }: ArtistListProps) {
             type: 'artists',
             items: artists
           }}
+          cardElement={cardRef}
         />
       </div>
       <div className="artist-grid">

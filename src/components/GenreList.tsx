@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import ShareButton from './ShareButton'
 import './GenreList.css'
 
@@ -12,8 +12,10 @@ interface GenreListProps {
 }
 
 export default function GenreList({ genres }: GenreListProps) {
+  const cardRef = useRef<HTMLElement>(null);
+  
   return (
-    <section className="box">
+    <section className="box" ref={cardRef}>
       <div className="genre-header-container">
         <h2 className="genre-header">🎶 Top Genres</h2>
         <ShareButton 
@@ -21,6 +23,7 @@ export default function GenreList({ genres }: GenreListProps) {
             type: 'genres',
             items: genres
           }}
+          cardElement={cardRef}
         />
       </div>
       <div className="genre-grid">

@@ -1,13 +1,15 @@
-import React from 'react'
-import { Album } from '../types'
-import ShareButton from './ShareButton'
-import './AlbumList.css'
+import React, { useRef } from 'react';
+import { Album } from '../types';
+import ShareButton from './ShareButton';
+import './AlbumList.css';
 
 interface AlbumListProps {
   albums: Album[]
 }
 
 export default function AlbumList({ albums }: AlbumListProps) {
+  const cardRef = useRef<HTMLElement>(null);
+  
   const getAlbumImage = (album: Album) => {
     if (album.images && album.images.length > 0) {
       // Use medium size image (index 1) or fallback to other sizes
@@ -25,7 +27,7 @@ export default function AlbumList({ albums }: AlbumListProps) {
   }
 
   return (
-    <section className="box">
+    <section className="box" ref={cardRef}>
       <div className="album-header-container">
         <h2 className="album-header">💿 Top Albums</h2>
         <ShareButton 
@@ -33,6 +35,7 @@ export default function AlbumList({ albums }: AlbumListProps) {
             type: 'albums',
             items: albums
           }}
+          cardElement={cardRef}
         />
       </div>
       <div className="album-grid">

@@ -119,12 +119,6 @@
   text-align: right;
 }
 
-.track-header {
-  margin-bottom: 24px;
-  text-align: center;
-  color: #ffffff;
-}
-
 @media (max-width: 768px) {
   .track-grid {
     grid-template-columns: 1fr;

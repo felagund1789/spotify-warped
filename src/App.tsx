@@ -39,6 +39,21 @@ export default function App() {
           <TopLists token={token} />
         </div>
       )}
+      <footer className="app-footer">
+        <div className="footer-content">
+          <p className="disclaimer">
+            This is an unofficial application and is not affiliated with, endorsed by, or sponsored by Spotify AB.
+          </p>
+          <p className="disclaimer">
+            "Spotify" and "Spotify Wrapped" are trademarks of Spotify AB. This app uses the Spotify Web API to display your personal music data.
+          </p>
+          <p className="footer-links">
+            <a href="https://www.spotify.com" target="_blank" rel="noopener noreferrer">Spotify.com</a>
+            <span className="separator">•</span>
+            <a href="https://developer.spotify.com/documentation/web-api" target="_blank" rel="noopener noreferrer">Spotify Web API</a>
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

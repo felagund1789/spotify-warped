@@ -200,6 +200,7 @@ button{
 
 .keyboard-hint {
   margin-top: 0.5rem;
+  height: 2rem;
   color: var(--muted);
   font-size: 0.9rem;
   text-align: center;
@@ -212,6 +213,48 @@ button{
 }
 
 .muted { color: var(--muted); font-size:0.9rem }
+
+.app-footer {
+  margin-top: auto;
+  padding: 2rem 0 1rem 0;
+  border-top: 1px solid rgba(154, 164, 178, 0.2);
+  background: rgba(11, 18, 32, 0.5);
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.footer-links {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+}
+
+.footer-links a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #1ed760;
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 1rem;
+  color: var(--muted);
+}
 
 /* Mobile responsive styles */
 @media (max-width: 768px) {

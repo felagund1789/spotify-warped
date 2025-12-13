@@ -236,20 +236,20 @@ export async function getTopAlbums(token: string, limit = 5, time_range = 'long_
   // Count album occurrences and track album data
   const albumCounts: Record<string, { album: Album; count: number }> = {}
   
-  for (const track of tracks) {
+  tracks.forEach((track, i) => {
     if (track.album && track.album.id) {
       const albumId = track.album.id
       
       if (albumCounts[albumId]) {
-        albumCounts[albumId].count++
+        albumCounts[albumId].count += (tracks.length - i); // Use reverse index to prioritize earlier albums
       } else {
         albumCounts[albumId] = {
           album: track.album,
-          count: 1
+          count: tracks.length - i // Use reverse index to prioritize earlier albums
         }
       }
     }
-  }
+  });
   
   // Sort albums by track count (descending) and return top albums
   const sortedAlbums = Object.values(albumCounts)

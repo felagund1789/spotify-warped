@@ -82,25 +82,25 @@ export async function getTopAlbums(
   time_range = "long_term"
 ): Promise<Album[]> {
   // Add small delay to simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   
   // Count album occurrences and track album data
   const albumCounts: Record<string, { album: Album; count: number }> = {};
   
-  for (const track of mockTracks) {
+  mockTracks.forEach((track, i) => {
     if (track.album && track.album.id) {
       const albumId = track.album.id;
       
       if (albumCounts[albumId]) {
-        albumCounts[albumId].count++;
+        albumCounts[albumId].count += (mockTracks.length - i); // Use reverse index to prioritize earlier albums
       } else {
         albumCounts[albumId] = {
           album: track.album,
-          count: 1
+          count: mockTracks.length - i // Use reverse index to prioritize earlier albums
         };
       }
     }
-  }
+  });
   
   // Sort albums by track count (descending) and return top albums
   const sortedAlbums = Object.values(albumCounts)

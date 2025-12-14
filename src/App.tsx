@@ -47,11 +47,13 @@ export default function App() {
           <p className="disclaimer">
             "Spotify" and "Spotify Wrapped" are trademarks of Spotify AB. This app uses the Spotify Web API to display your personal music data.
           </p>
-          <p className="footer-links">
+            <p className="footer-links">
             <a href="https://www.spotify.com" target="_blank" rel="noopener noreferrer">Spotify.com</a>
             <span className="separator">•</span>
             <a href="https://developer.spotify.com/documentation/web-api" target="_blank" rel="noopener noreferrer">Spotify Web API</a>
-          </p>
+            <span className="separator">•</span>
+            <a href="https://github.com/felagund1789/spotify-warped" target="_blank" rel="noopener noreferrer">Spotify Warped on GitHub</a>
+            </p>
         </div>
       </footer>
     </div>

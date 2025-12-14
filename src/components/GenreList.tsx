@@ -1,5 +1,4 @@
-import React from 'react'
-import './GenreList.css'
+import '../styles/GenreList.css'
 
 interface Genre {
   name: string

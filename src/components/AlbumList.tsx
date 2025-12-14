@@ -1,6 +1,5 @@
-import React from 'react'
-import { Album } from '../types'
-import './AlbumList.css'
+import { Album } from '../types';
+import '../styles/AlbumList.css';
 
 interface AlbumListProps {
   albums: Album[]

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import './Carousel.css';
+import '../styles/Carousel.css';
 
 interface CarouselItem {
   component: React.ReactNode;

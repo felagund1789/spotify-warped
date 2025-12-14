@@ -1,6 +1,5 @@
-import React from 'react'
 import { Track } from '../types'
-import './TrackList.css'
+import '../styles/TrackList.css'
 
 interface TrackListProps {
   tracks: Track[]

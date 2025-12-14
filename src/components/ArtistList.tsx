@@ -1,6 +1,5 @@
-import React from 'react'
-import { Artist } from '../types'
-import './ArtistList.css'
+import { Artist } from '../types';
+import '../styles/ArtistList.css';
 
 interface ArtistListProps {
   artists: Artist[]

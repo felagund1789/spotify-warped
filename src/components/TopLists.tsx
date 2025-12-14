@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getTopArtists, getTopTracks, getTopGenres, getTopAlbums } from "../api/spotify";
 import GenreList from "./GenreList";
 import ArtistList from "./ArtistList";

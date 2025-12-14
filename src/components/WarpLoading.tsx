@@ -1,5 +1,4 @@
-import React from 'react';
-import './WarpLoading.css';
+import '../styles/WarpLoading.css';
 
 export default function WarpLoading() {
   return (

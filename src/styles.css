@@ -100,6 +100,51 @@ button {
   margin: 0;
 }
 
+.time-range-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.time-range-btn {
+  background: var(--card);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.time-range-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.time-range-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+}
+
+.time-range-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.time-range-btn:disabled:hover {
+  transform: none;
+  background: var(--card);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 .box {
   background:var(--card);
   padding:1rem;
@@ -176,5 +221,20 @@ button {
   .carousel-header p {
     font-size: 1rem;
     height: 2rem;
+  }
+
+  .time-range-selector {
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+  }
+
+  .time-range-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    min-width: 80px;
+    flex: 1;
+    max-width: 120px;
   }
 }

@@ -6,6 +6,7 @@ import TrackList from "./TrackList";
 import AlbumList from "./AlbumList";
 import WarpLoading from "./WarpLoading";
 import Carousel from "./Carousel";
+import ErrorMessage from "./ErrorMessage";
 
 type ItemList = { name: string; extra?: string }[];
 import { Artist, Track, Album } from "../types";
@@ -25,6 +26,7 @@ const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
 
 export default function TopLists({ token }: { token: string }) {
   const [timeRange, setTimeRange] = useState<TimeRange>('long_term');
+  const [retryKey, setRetryKey] = useState(0);
   
   // Use React Query hooks for data fetching
   const artistsQuery = useTopArtists(token, 5, timeRange);
@@ -41,6 +43,15 @@ export default function TopLists({ token }: { token: string }) {
   // Check loading state
   const isLoading = artistsQuery.isLoading || tracksQuery.isLoading || albumsQuery.isLoading || genresQuery.isLoading;
   const hasError = artistsQuery.error || tracksQuery.error || albumsQuery.error || genresQuery.error;
+  
+  // Retry function to refetch all queries
+  const handleRetry = () => {
+    setRetryKey(prev => prev + 1);
+    artistsQuery.refetch();
+    tracksQuery.refetch();
+    albumsQuery.refetch();
+    genresQuery.refetch();
+  };
 
   // Prepare carousel items
   const carouselItems = [
@@ -55,7 +66,13 @@ export default function TopLists({ token }: { token: string }) {
 
   // Show error state if any query fails
   if (hasError) {
-    console.error('Error loading data:', hasError);
+    return (
+      <ErrorMessage 
+        title="Unable to Load Your Music Data"
+        message="We're having trouble connecting to Spotify. Please check your connection and try again."
+        onRetry={handleRetry}
+      />
+    );
   }
 
   return (

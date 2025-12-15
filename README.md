@@ -8,7 +8,9 @@
 
 A beautiful, interactive React + TypeScript application that creates your personalized "Spotify Warped" experience. Navigate through your top music data with an immersive carousel interface and warp-like loading animations.
 
-![Spotify Warped Screenshot](screens/fullscreen.png)
+![Spotify Warped screenshot](screens/fullscreen.png)
+| ![Spotify Warped mobile screenshot (Artists)](screens/mobile-artists.png) | ![Spotify Warped mobile screenshot (Albums)](screens/mobile-albums.png) | ![Spotify Warped mobile screenshot (Tracks)](screens/mobile-tracks.png) |
+|:---:|:---:|:---:|
 
 ## ✨ Features
 

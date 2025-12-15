@@ -22,6 +22,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: pan-y; /* Allow vertical scrolling but handle horizontal swipes */
+  user-select: none; /* Prevent text selection during drag */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .carousel-item {
@@ -115,6 +120,32 @@
   text-align: center;
 }
 
+.mobile-hint {
+  display: none;
+}
+
+.desktop-hint {
+  display: inline;
+}
+
+/* Add visual feedback for touch interactions */
+.carousel-track:active {
+  opacity: 0.9;
+}
+
+/* Improve touch targets on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .carousel-item {
+    cursor: default;
+  }
+  
+  .nav-button {
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
+    min-height: 48px; /* Minimum touch target size */
+  }
+}
+
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .carousel {
@@ -125,9 +156,40 @@
     display: flex;
     flex-wrap: wrap;
     grid-template-columns: repeat(2, auto);
+    gap: 0.75rem;
   }
 
+  .nav-button {
+    font-size: 0.85rem;
+    padding: 0.65rem 1.25rem;
+  }
+
+  .desktop-hint {
+    display: none;
+  }
+
+  .mobile-hint {
+    display: inline;
+  }
+  
   .keyboard-hint {
-    visibility: hidden;
+    visibility: visible;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+  
+  /* Optimize carousel for mobile touch */
+  .carousel-item.center {
+    width: 350px;
+  }
+  
+  .carousel-item.left {
+    transform: translateX(-200px) scale(0.75);
+    width: 350px;
+  }
+  
+  .carousel-item.right {
+    transform: translateX(200px) scale(0.75);
+    width: 350px;
   }
 }

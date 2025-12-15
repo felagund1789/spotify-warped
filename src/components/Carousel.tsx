@@ -13,6 +13,14 @@ interface CarouselProps {
 
 export default function Carousel({ items, className = '' }: CarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  
+  // Touch/swipe state
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  // Minimum swipe distance to trigger navigation (in pixels)
+  const minSwipeDistance = 50;
 
   const navigateCarousel = useCallback((direction: 'left' | 'right' | number) => {
     if (typeof direction === 'number') {
@@ -27,6 +35,80 @@ export default function Carousel({ items, className = '' }: CarouselProps) {
       });
     }
   }, [items.length]);
+
+  // Handle touch start
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null); // Reset touch end
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+  };
+
+  // Handle touch move
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  // Handle touch end
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) {
+      setIsDragging(false);
+      return;
+    }
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      navigateCarousel('right'); // Swipe left = go to next item
+    } else if (isRightSwipe) {
+      navigateCarousel('left'); // Swipe right = go to previous item
+    }
+    
+    // Reset touch state
+    setTouchStart(null);
+    setTouchEnd(null);
+    setIsDragging(false);
+  };
+
+  // Handle mouse events for desktop drag simulation
+  const onMouseDown = (e: React.MouseEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.clientX);
+    setIsDragging(true);
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!touchStart || !isDragging) return;
+    setTouchEnd(e.clientX);
+  };
+
+  const onMouseUp = () => {
+    if (!touchStart || !touchEnd) {
+      setIsDragging(false);
+      return;
+    }
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      navigateCarousel('right');
+    } else if (isRightSwipe) {
+      navigateCarousel('left');
+    }
+    
+    setTouchStart(null);
+    setTouchEnd(null);
+    setIsDragging(false);
+  };
+
+  // Prevent context menu on long press (mobile)
+  const onContextMenu = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -54,7 +136,18 @@ export default function Carousel({ items, className = '' }: CarouselProps) {
   return (
     <div className={`carousel-wrapper ${className}`}>
       <div className="carousel">
-        <div className="carousel-track">
+        <div 
+          className="carousel-track"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+          onContextMenu={onContextMenu}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
           {items.map((item, index) => (
             <div
               key={index}
@@ -79,7 +172,8 @@ export default function Carousel({ items, className = '' }: CarouselProps) {
         ))}
       </div>
       <div className="keyboard-hint">
-        Use ← → arrow keys or click to navigate
+        <span className="desktop-hint">Use ← → arrow keys or click to navigate</span>
+        <span className="mobile-hint">Swipe left or right to navigate</span>
       </div>
     </div>
   );

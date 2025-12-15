@@ -2,6 +2,7 @@
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Query](https://img.shields.io/badge/React%20Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query/latest)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 
@@ -19,14 +20,22 @@ A beautiful, interactive React + TypeScript application that creates your person
 
 ### 🎠 **Interactive Carousel Navigation**
 - **3D Carousel Effect**: Navigate through different data views with smooth transitions
-- **Keyboard Support**: Use arrow keys (← →) for seamless navigation
-- **Click Navigation**: Click on side items or navigation buttons to switch views
-- **Visual Feedback**: Active states and hover effects for enhanced user experience
+- **Multi-Input Support**: Keyboard, mouse, and touch navigation for all devices
+  - **Keyboard Support**: Use arrow keys (← →) for seamless navigation
+  - **Click Navigation**: Click on side items or navigation buttons to switch views
+  - **Swipe Gestures**: Native mobile swipe support for touch devices
+- **Visual Feedback**: Active states, hover effects, and drag cursors for enhanced user experience
 
 ### 🌊 **Immersive Loading Experience**
 - **Warp Tunnel Effect**: Dynamic expanding circles create a "warping through time" animation
 - **Progressive Loading**: Animated text and dots provide engaging feedback
 - **Smart Caching**: Data persistence with 24-hour localStorage caching for faster subsequent loads
+
+### 📊 **Advanced Data Management**
+- **React Query Integration**: Powerful data fetching with automatic caching and background updates
+- **Time Range Selection**: View your top music from different periods (1 year, 6 months, 1 month)
+- **Optimistic Updates**: Smooth UI transitions with intelligent cache management
+- **Background Sync**: Automatic data refresh and stale-while-revalidate patterns
 
 ### 🎯 **User Experience Excellence**
 - **Responsive Design**: Optimized for desktop and mobile devices
@@ -40,8 +49,10 @@ A beautiful, interactive React + TypeScript application that creates your person
 - **User Profile Integration**: Real user data with avatar dropdown menu
 
 ### ⚡ **Performance Optimizations**
-- **Component Architecture**: Modular, reusable components (Carousel, WarpLoading, etc.)
-- **Efficient Caching**: Smart data persistence reduces API calls and loading times
+- **Component Architecture**: Modular, reusable components with custom hooks (Carousel, WarpLoading, useSwipe)
+- **React Query Caching**: Intelligent data fetching with stale-while-revalidate and background updates
+- **Efficient State Management**: Query-based state with automatic cache invalidation
+- **Touch Optimization**: Hardware-accelerated swipe gestures for smooth mobile experience
 - **CSS Modules**: Organized styling with component-specific CSS files
 - **Fast Development**: Built with Vite for lightning-fast development and builds
 
@@ -98,8 +109,9 @@ A beautiful, interactive React + TypeScript application that creates your person
 
 ### Navigation
 - **Keyboard**: Use `←` and `→` arrow keys to navigate between views
-- **Mouse**: Click on navigation buttons or side carousel items
-- **Touch**: Tap navigation buttons on mobile devices
+- **Mouse**: Click on navigation buttons or side carousel items, or drag to swipe
+- **Touch**: Native swipe gestures (left/right) for intuitive mobile navigation
+- **Multi-Platform**: Consistent experience across desktop, tablet, and mobile devices
 
 ### Data Views
 1. **Genres**: Colorful cards showing your top music genres
@@ -118,29 +130,38 @@ A beautiful, interactive React + TypeScript application that creates your person
 ```
 src/
 ├── api/
-│   └── spotify.ts            # Spotify API integration
+│   ├── spotify.ts            # React Query hooks for Spotify API
+│   └── mockSpotify.ts        # Mock implementation for development
 ├── components/
-│   ├── Carousel.tsx          # Main carousel navigation
+│   ├── Carousel.tsx          # Main carousel with swipe navigation
 │   ├── WarpLoading.tsx       # Loading animation
+│   ├── ErrorMessage.tsx      # Custom error handling component
 │   ├── GenreList.tsx         # Genre display component
 │   ├── ArtistList.tsx        # Artist display component
 │   ├── AlbumList.tsx         # Album display component
 │   ├── TrackList.tsx         # Track display component
-│   └── TopLists.tsx          # Main data container
+│   └── TopLists.tsx          # Main data container with time ranges
+├── hooks/
+│   ├── index.ts              # Hook exports
+│   └── useSwipe.ts           # Custom swipe gesture hook
 └── styles/                   # Component-specific CSS files
 ```
 
 ### Key Technologies
 - **React 18**: Latest React with hooks and functional components
 - **TypeScript**: Full type safety and enhanced developer experience
+- **@tanstack/react-query**: Powerful data fetching and caching library
+- **Custom Hooks**: Reusable logic with `useSwipe` for gesture handling
 - **Vite**: Fast development server and optimized builds
-- **CSS3**: Modern styling with grid, flexbox, and animations
+- **CSS3**: Modern styling with grid, flexbox, and touch-optimized animations
 - **Spotify Web API**: Official Spotify integration with OAuth2 PKCE
 
 ### Performance Features
-- **Smart Caching**: 24-hour localStorage cache for reduced API calls
-- **Component Extraction**: Reusable, modular architecture
-- **Efficient Rendering**: Optimized re-renders and state management
+- **React Query Caching**: Intelligent query caching with stale-while-revalidate patterns
+- **Background Updates**: Automatic data refresh and cache synchronization
+- **Custom Hook Architecture**: Reusable logic with `useSwipe` for gesture handling
+- **Optimized Touch Events**: Hardware-accelerated swipe gestures for 60fps mobile experience
+- **Efficient Rendering**: Query-based state management minimizes unnecessary re-renders
 - **Progressive Loading**: Smooth loading states with engaging animations
 
 ## 🔒 Security & Privacy

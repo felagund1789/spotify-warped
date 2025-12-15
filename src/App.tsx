@@ -52,7 +52,9 @@ export default function App() {
             <span className="separator">•</span>
             <a href="https://developer.spotify.com/documentation/web-api" target="_blank" rel="noopener noreferrer">Spotify Web API</a>
             <span className="separator">•</span>
-            <a href="https://github.com/felagund1789/spotify-warped" target="_blank" rel="noopener noreferrer">Spotify Warped on GitHub</a>
+              <a href="https://github.com/felagund1789/spotify-warped" target="_blank" rel="noopener noreferrer">
+                Spotify Warped on <img src="/github-icon.svg" alt="GitHub" className="github-icon" />
+              </a>
             </p>
         </div>
       </footer>

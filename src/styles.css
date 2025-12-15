@@ -237,4 +237,8 @@ button {
     flex: 1;
     max-width: 120px;
   }
+
+  .separator {
+    margin: 0 0.5rem;
+  }
 }

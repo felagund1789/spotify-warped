@@ -1,12 +1,10 @@
 /**
- * Minimal Spotify helpers implementing Authorization Code with PKCE
- * - startAuthIfNeeded(): generates PKCE verifier/challenge and redirects to Spotify auth
- * - handleCallback(): exchanges code for tokens and stores them
- * - getTopArtists / getTopTracks / getTopAlbums / getTopGenres
- *
- * NOTE: This is a development starter. For production, implement secure token refresh and storage.
+ * Spotify API helpers with React Query caching
+ * - Uses React Query for all data fetching and caching
+ * - Query keys follow the pattern [endpoint, token, limit, time_range]
  */
 
+import { useQuery } from '@tanstack/react-query'
 import { Artist, Track, Album } from "../types"
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
@@ -16,9 +14,7 @@ const SCOPES = (import.meta.env.VITE_SPOTIFY_SCOPES || 'user-top-read').split(' 
 const STORAGE = {
   accessTokenKey: 'sw_access_token',
   expiresAtKey: 'sw_expires_at',
-  pkceVerifierKey: 'sw_pkce_verifier',
-  cachedTracksKey: 'sw_cached_tracks',
-  tracksTimestampKey: 'sw_tracks_timestamp'
+  pkceVerifierKey: 'sw_pkce_verifier'
 }
 
 function base64URLEncode(str: ArrayBuffer) {
@@ -131,206 +127,144 @@ async function fetchSpotify<T>(token: string, path: string, params?: Record<stri
   return (await r.json()) as T
 }
 
-export async function getTopArtists(token: string, limit = 5, time_range = 'long_term'): Promise<Artist[]> {
-  const data = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit, time_range })
-  return data.items;
+// React Query hook for fetching top artists
+export function useTopArtists(token: string, limit = 5, time_range = 'long_term') {
+  return useQuery({
+    queryKey: ['top-artists', token, limit, time_range],
+    queryFn: async (): Promise<Artist[]> => {
+      const data = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit, time_range })
+      return data.items
+    },
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  })
 }
 
-export async function getTopTracks(token: string, limit = 5, time_range = 'long_term'): Promise<Track[]> {
-  const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { limit, time_range })
-  return data.items;
+// React Query hook for fetching top tracks
+export function useTopTracks(token: string, limit = 5, time_range = 'long_term') {
+  return useQuery({
+    queryKey: ['top-tracks', token, limit, time_range],
+    queryFn: async (): Promise<Track[]> => {
+      const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { limit, time_range })
+      return data.items
+    },
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  })
 }
 
-/**
- * Aggregate genres from top artists and return top N genres by count
- */
-export async function getTopGenres(token: string, limit = 5, time_range = 'long_term') {
-  const artistsData = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit: 50, time_range })
-  const counts: Record<string, number> = {}
-  for (const artist of artistsData.items) {
-    for (const g of artist.genres || []) {
-      counts[g] = (counts[g] || 0) + 1
-    }
-  }
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit)
-  return sorted.map(([name, c]) => ({ name, extra: `${c} artist${c > 1 ? 's' : ''}` }))
-}
-
-// Storage for cached top tracks
-let cachedTopTracks: Track[] | null = null
-let cachingInProgress = false
-
-// Cache expiration time (24 hours)
-const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000
-
-/**
- * Load cached tracks from localStorage if available and not expired
- */
-function loadCachedTracksFromStorage(): Track[] | null {
-  try {
-    const tracksData = localStorage.getItem(STORAGE.cachedTracksKey)
-    const timestampStr = localStorage.getItem(STORAGE.tracksTimestampKey)
-    
-    if (!tracksData || !timestampStr) {
-      return null
-    }
-    
-    const timestamp = Number(timestampStr)
-    const now = Date.now()
-    
-    // Check if cache is expired
-    if (now - timestamp > CACHE_EXPIRATION_MS) {
-      console.log('Cached tracks expired, will fetch fresh data')
-      localStorage.removeItem(STORAGE.cachedTracksKey)
-      localStorage.removeItem(STORAGE.tracksTimestampKey)
-      return null
-    }
-    
-    const tracks = JSON.parse(tracksData) as Track[]
-    console.log(`Loaded ${tracks.length} cached tracks from localStorage`)
-    return tracks
-    
-  } catch (error) {
-    console.error('Error loading cached tracks from localStorage:', error)
-    localStorage.removeItem(STORAGE.cachedTracksKey)
-    localStorage.removeItem(STORAGE.tracksTimestampKey)
-    return null
-  }
-}
-
-/**
- * Save tracks to localStorage
- */
-function saveCachedTracksToStorage(tracks: Track[]): void {
-  try {
-    localStorage.setItem(STORAGE.cachedTracksKey, JSON.stringify(tracks))
-    localStorage.setItem(STORAGE.tracksTimestampKey, String(Date.now()))
-    console.log(`Saved ${tracks.length} tracks to localStorage cache`)
-  } catch (error) {
-    console.error('Error saving tracks to localStorage:', error)
-    // If storage is full or fails, continue without caching
-  }
-}
-
-/**
- * Fetches and caches the user's top N tracks by making API calls or loading from cache
- * This method can be called once and the tracks will be stored for use by other methods
- */
-export async function getCachedTracks(token: string, limit = 500, time_range = 'long_term'): Promise<Track[]> {
-  // Return in-memory cached data if available
-  if (cachedTopTracks) {
-    return cachedTopTracks
-  }
-
-  // Try to load from localStorage first
-  const storageCache = loadCachedTracksFromStorage()
-  if (storageCache && storageCache.length > 0) {
-    cachedTopTracks = storageCache
-    return cachedTopTracks
-  }
-
-  // If already caching, wait for completion
-  if (cachingInProgress) {
-    while (cachingInProgress) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-    return cachedTopTracks || []
-  }
-
-  cachingInProgress = true
-  const allTracks: Track[] = []
-  
-  try {
-    console.log(`Fetching top ${limit} tracks from Spotify API...`)
-    
-    // Fetch K pages of 50 tracks each
-    for (let page = 0; page < Math.ceil(limit / 50); page++) {
-      const offset = page * 50
-      console.log(`Fetching tracks ${offset + 1}-${Math.min(offset + 50, limit)}...`)
-      
-      const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { 
-        limit: Math.min(50, limit - offset), 
-        offset, 
-        time_range 
-      })
-      
-      allTracks.push(...data.items)
-      
-      // If we get fewer tracks than requested, we've reached the end
-      if (data.items.length < Math.min(50, limit - offset)) {
-        console.log(`Reached end of tracks at ${allTracks.length} total tracks`)
-        break
-      }
-      
-      // If we've fetched the requested limit, stop
-      if (allTracks.length >= limit) {
-        break
-      }
-      
-      // Add a small delay between requests to be respectful to the API
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-    
-    cachedTopTracks = allTracks
-    
-    // Save to localStorage for future sessions
-    saveCachedTracksToStorage(allTracks)
-    
-    console.log(`Successfully cached ${allTracks.length} top tracks`)
-    
-  } catch (error) {
-    console.error('Error fetching top tracks:', error)
-    throw error
-  } finally {
-    cachingInProgress = false
-  }
-  
-  return cachedTopTracks
-}
-
-/**
- * Clear the cached tracks (useful for refreshing data)
- */
-export function clearTracksCache(): void {
-  cachedTopTracks = null
-  localStorage.removeItem(STORAGE.cachedTracksKey)
-  localStorage.removeItem(STORAGE.tracksTimestampKey)
-  console.log('Cleared tracks cache from memory and localStorage')
-}
-
-/**
- * Get top albums by aggregating album data from the top 500 tracks
- * Returns the 5 most frequent albums based on track count
- */
-export async function getTopAlbums(token: string, limit = 5, time_range = 'long_term'): Promise<Album[]> {
-  // Get the cached top tracks (will fetch if not cached)
-  const tracks = await getCachedTracks(token, 500, time_range)
-  
-  // Count album occurrences and track album data
-  const albumCounts: Record<string, { album: Album; count: number }> = {}
-  
-  tracks.forEach((track, i) => {
-    if (track.album && track.album.id) {
-      const albumId = track.album.id
-      
-      if (albumCounts[albumId]) {
-        albumCounts[albumId].count += (tracks.length - i); // Use reverse index to prioritize earlier albums
-      } else {
-        albumCounts[albumId] = {
-          album: track.album,
-          count: tracks.length - i // Use reverse index to prioritize earlier albums
+// React Query hook for fetching top genres (aggregated from artists)
+export function useTopGenres(token: string, limit = 5, time_range = 'long_term') {
+  return useQuery({
+    queryKey: ['top-genres', token, limit, time_range],
+    queryFn: async () => {
+      const artistsData = await fetchSpotify<{ items: Artist[] }>(token, 'me/top/artists', { limit: 50, time_range })
+      const counts: Record<string, number> = {}
+      for (const artist of artistsData.items) {
+        for (const g of artist.genres || []) {
+          counts[g] = (counts[g] || 0) + 1
         }
       }
-    }
-  });
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit)
+      return sorted.map(([name, c]) => ({ name, extra: `${c} artist${c > 1 ? 's' : ''}` }))
+    },
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  })
+}
+
+// React Query hook for fetching large number of tracks (used for albums aggregation)
+export function useCachedTracks(token: string, limit = 500, time_range = 'long_term') {
+  return useQuery({
+    queryKey: ['cached-tracks', token, limit, time_range],
+    queryFn: async (): Promise<Track[]> => {
+      const allTracks: Track[] = []
+      
+      console.log(`Fetching top ${limit} tracks from Spotify API...`)
+      
+      // Fetch pages of 50 tracks each
+      for (let page = 0; page < Math.ceil(limit / 50); page++) {
+        const offset = page * 50
+        console.log(`Fetching tracks ${offset + 1}-${Math.min(offset + 50, limit)}...`)
+        
+        const data = await fetchSpotify<{ items: Track[] }>(token, 'me/top/tracks', { 
+          limit: Math.min(50, limit - offset), 
+          offset, 
+          time_range 
+        })
+        
+        allTracks.push(...data.items)
+        
+        // If we get fewer tracks than requested, we've reached the end
+        if (data.items.length < Math.min(50, limit - offset)) {
+          console.log(`Reached end of tracks at ${allTracks.length} total tracks`)
+          break
+        }
+        
+        // If we've fetched the requested limit, stop
+        if (allTracks.length >= limit) {
+          break
+        }
+        
+        // Add a small delay between requests to be respectful to the API
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+      
+      console.log(`Successfully fetched ${allTracks.length} top tracks`)
+      return allTracks
+    },
+    enabled: !!token,
+    staleTime: 60 * 60 * 1000, // 1 hour (longer for large datasets)
+    gcTime: 4 * 60 * 60 * 1000, // 4 hours
+  })
+}
+
+// React Query hook for top albums (derived from cached tracks)
+export function useTopAlbums(token: string, limit = 5, time_range = 'long_term') {
+  const tracksQuery = useCachedTracks(token, 500, time_range)
   
-  // Sort albums by track count (descending) and return top albums
-  const sortedAlbums = Object.values(albumCounts)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, limit)
-    .map(entry => entry.album)
-  
-  console.log(`Found ${Object.keys(albumCounts).length} unique albums, returning top ${sortedAlbums.length}`)
-  
-  return sortedAlbums
+  return useQuery({
+    queryKey: ['top-albums', token, limit, time_range],
+    queryFn: (): Album[] => {
+      if (!tracksQuery.data) {
+        throw new Error('Tracks data not available')
+      }
+      
+      const tracks = tracksQuery.data
+      
+      // Count album occurrences and track album data
+      const albumCounts: Record<string, { album: Album; count: number }> = {}
+      
+      tracks.forEach((track, i) => {
+        if (track.album && track.album.id) {
+          const albumId = track.album.id
+          
+          if (albumCounts[albumId]) {
+            albumCounts[albumId].count += (tracks.length - i) // Use reverse index to prioritize earlier albums
+          } else {
+            albumCounts[albumId] = {
+              album: track.album,
+              count: tracks.length - i // Use reverse index to prioritize earlier albums
+            }
+          }
+        }
+      })
+      
+      // Sort albums by track count (descending) and return top albums
+      const sortedAlbums = Object.values(albumCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, limit)
+        .map(entry => entry.album)
+      
+      console.log(`Found ${Object.keys(albumCounts).length} unique albums, returning top ${sortedAlbums.length}`)
+      
+      return sortedAlbums
+    },
+    enabled: !!token && !!tracksQuery.data && tracksQuery.isSuccess,
+    staleTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 4 * 60 * 60 * 1000, // 4 hours
+  })
 }

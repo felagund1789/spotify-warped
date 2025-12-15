@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { getTopArtists, getTopTracks, getTopGenres, getTopAlbums } from "../api/spotify";
+import { useState } from "react";
+import { useTopArtists, useTopTracks, useTopGenres, useTopAlbums } from "../api/spotify";
 import GenreList from "./GenreList";
 import ArtistList from "./ArtistList";
 import TrackList from "./TrackList";
@@ -24,12 +24,23 @@ const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
 ];
 
 export default function TopLists({ token }: { token: string }) {
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [genres, setGenres] = useState<ItemList>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>('long_term');
+  
+  // Use React Query hooks for data fetching
+  const artistsQuery = useTopArtists(token, 5, timeRange);
+  const tracksQuery = useTopTracks(token, 5, timeRange);
+  const albumsQuery = useTopAlbums(token, 5, timeRange);
+  const genresQuery = useTopGenres(token, 5, timeRange);
+  
+  // Extract data from queries
+  const artists = artistsQuery.data || [];
+  const tracks = tracksQuery.data || [];
+  const albums = albumsQuery.data || [];
+  const genres = genresQuery.data || [];
+  
+  // Check loading state
+  const isLoading = artistsQuery.isLoading || tracksQuery.isLoading || albumsQuery.isLoading || genresQuery.isLoading;
+  const hasError = artistsQuery.error || tracksQuery.error || albumsQuery.error || genresQuery.error;
 
   // Prepare carousel items
   const carouselItems = [
@@ -42,39 +53,10 @@ export default function TopLists({ token }: { token: string }) {
   // Check if all data is loaded
   const isDataReady = artists.length > 0 && tracks.length > 0 && albums.length > 0 && genres.length > 0;
 
-  useEffect(() => {
-    let mounted = true;
-    setIsLoading(true);
-
-    async function load() {
-      try {
-        const [a, t, al, g] = await Promise.all([
-          getTopArtists(token, 5, timeRange),
-          getTopTracks(token, 5, timeRange),
-          getTopAlbums(token, 5, timeRange),
-          getTopGenres(token, 5, timeRange),
-        ]);
-        if (!mounted) return;
-        setArtists(a);
-        setTracks(t);
-        setAlbums(al);
-        setGenres(g);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        if (mounted) {
-          // Add a small delay to show the loading effect
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 1000);
-        }
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [token, timeRange]);
+  // Show error state if any query fails
+  if (hasError) {
+    console.error('Error loading data:', hasError);
+  }
 
   return (
     <div className="carousel-container">

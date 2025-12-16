@@ -3,6 +3,7 @@
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React Query](https://img.shields.io/badge/React%20Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query/latest)
+[![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 
@@ -58,6 +59,14 @@ A beautiful, interactive React + TypeScript application that creates your person
 - **CSS Modules**: Organized styling with component-specific CSS files
 - **Fast Development**: Built with Vite for lightning-fast development and builds
 
+### 🧪 **Testing & Quality Assurance**
+- **Comprehensive Test Suite**: 100+ test cases covering all components and custom hooks
+- **Vitest Integration**: Fast, modern test runner with TypeScript support
+- **React Testing Library**: User-focused testing with accessibility best practices
+- **Component Testing**: Isolated testing of all UI components with mocked dependencies
+- **Hook Testing**: Dedicated tests for custom hooks like `useSwipe` gesture handling
+- **API Mocking**: Comprehensive mocking of Spotify API for reliable testing
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -102,7 +111,19 @@ A beautiful, interactive React + TypeScript application that creates your person
    yarn dev
    ```
 
-5. **Open & Authenticate**
+5. **Run Tests (Optional)**
+   ```bash
+   # Run tests in watch mode
+   npm test
+   
+   # Run tests with UI
+   npm run test:ui
+   
+   # Run tests once
+   npm run test:run
+   ```
+
+6. **Open & Authenticate**
    - Navigate to `http://localhost:5173`
    - Click "Sign in with Spotify"
    - Enjoy your personalized Spotify Warped experience!
@@ -154,6 +175,8 @@ src/
 - **TypeScript**: Full type safety and enhanced developer experience
 - **@tanstack/react-query**: Powerful data fetching and caching library
 - **Custom Hooks**: Reusable logic with `useSwipe` for gesture handling
+- **Vitest**: Modern test runner with native TypeScript support
+- **React Testing Library**: User-focused testing utilities
 - **Vite**: Fast development server and optimized builds
 - **CSS3**: Modern styling with grid, flexbox, and touch-optimized animations
 - **Spotify Web API**: Official Spotify integration with OAuth2 PKCE
@@ -205,6 +228,43 @@ src/
 - **Fast Loading**: Optimized loading states with engaging animations
 - **Error Handling**: Graceful error states and recovery mechanisms
 
+## 🧪 Testing
+
+The application includes a comprehensive test suite ensuring reliability and maintainability.
+
+### Test Coverage
+- **Component Tests**: All React components thoroughly tested
+  - `ErrorMessage`, `WarpLoading`, `GenreList`, `ArtistList`, `AlbumList`, `TrackList`
+  - `Carousel` with navigation and swipe functionality
+  - `TopLists` with React Query integration and time range selection
+- **Custom Hook Tests**: `useSwipe` hook with gesture handling
+- **Integration Tests**: Component interaction and API mocking
+- **Accessibility Tests**: Keyboard navigation and ARIA compliance
+
+### Testing Tools
+- **Vitest**: Fast, modern test runner with TypeScript support
+- **React Testing Library**: User-focused testing utilities
+- **@testing-library/user-event**: Realistic user interaction simulation
+- **jsdom**: Browser environment simulation for component testing
+
+### Running Tests
+```bash
+# Interactive test runner (recommended for development)
+npm test
+
+# Visual test interface
+npm run test:ui
+
+# Single test run (CI/CD)
+npm run test:run
+```
+
+### Test Philosophy
+- **User-Focused**: Tests simulate real user interactions
+- **Accessibility-First**: Ensures components work with screen readers and keyboard navigation
+- **Isolated Testing**: Each component tested independently with mocked dependencies
+- **Edge Case Coverage**: Handles empty states, errors, and loading conditions
+
 ## 🤝 Contributing
 
 Contributions are welcome! This project follows these guidelines:
@@ -221,6 +281,7 @@ Contributions are welcome! This project follows these guidelines:
 - **TypeScript**: Maintain type safety throughout
 - **Component Architecture**: Keep components focused and reusable
 - **CSS Organization**: Use component-specific CSS files
+- **Testing**: Write tests for new components and features
 - **Accessibility**: Ensure WCAG compliance for new features
 
 ## 📄 License

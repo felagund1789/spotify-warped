@@ -18,7 +18,7 @@ export default function ArtistList({ artists }: ArtistListProps) {
     <section className="box">
       <h2 className="artist-header">🎤 Top Artists</h2>
       <div className="artist-grid">
-        {artists.map((artist, i) => (
+        {artists.length > 0 && artists.map((artist, i) => (
           <div 
             key={i} 
             className="artist-card"
@@ -48,7 +48,7 @@ export default function ArtistList({ artists }: ArtistListProps) {
               ) : null}
             </div>
           </div>
-        ))}
+        )) || <div className="no-artists">No artists available</div>}
       </div>
     </section>
   )

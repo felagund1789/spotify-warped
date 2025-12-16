@@ -26,7 +26,7 @@ export default function AlbumList({ albums }: AlbumListProps) {
     <section className="box">
       <h2 className="album-header">💿 Top Albums</h2>
       <div className="album-grid">
-        {albums.map((album, i) => (
+        {albums.length > 0 && albums.map((album, i) => (
           <div 
             key={i} 
             className="album-card"
@@ -54,7 +54,7 @@ export default function AlbumList({ albums }: AlbumListProps) {
               </div>
             </div>
           </div>
-        ))}
+        )) || <div className="no-albums">No albums available</div>}
       </div>
     </section>
   )

@@ -95,7 +95,7 @@ export default function TopLists({ token }: { token: string }) {
         </div>
       </div>
       
-      {isLoading || !isDataReady ? (
+      {isLoading ? (
         <WarpLoading />
       ) : (
         <Carousel items={carouselItems} />

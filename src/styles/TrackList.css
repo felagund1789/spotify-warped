@@ -112,6 +112,14 @@
   color: #ffffff;
 }
 
+.no-tracks {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  padding: 20px;
+  min-height: 480px;
+}
+
 @media (max-width: 768px) {
   .track-grid {
     grid-template-columns: 1fr;

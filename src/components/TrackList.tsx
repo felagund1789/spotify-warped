@@ -24,7 +24,7 @@ export default function TrackList({ tracks }: TrackListProps) {
     <section className="box">
       <h2 className="track-header">🎵 Top Tracks</h2>
       <div className="track-grid">
-        {tracks.map((track, i) => (
+        {tracks.length > 0 && tracks.map((track, i) => (
           <div 
             key={i} 
             className="track-card"
@@ -56,7 +56,7 @@ export default function TrackList({ tracks }: TrackListProps) {
               {formatDuration(track.duration_ms || 0)}
             </div>
           </div>
-        ))}
+        )) || <div className="no-tracks">No tracks available</div>}
       </div>
     </section>
   )

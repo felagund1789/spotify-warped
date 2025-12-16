@@ -66,3 +66,11 @@
   text-align: center;
   color: #ffffff;
 }
+
+.no-genres {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  padding: 20px;
+  min-height: 360px;
+}

@@ -284,6 +284,19 @@ Contributions are welcome! This project follows these guidelines:
 - **Testing**: Write tests for new components and features
 - **Accessibility**: Ensure WCAG compliance for new features
 
+## Demo Mode
+The public deployment runs in demo mode due to Spotify API development
+restrictions.
+
+- Authentication is disabled
+- Data is mocked but representative
+- Full functionality available when running locally with an approved Spotify account
+
+To disable demo mode locally change the environment variable in your `.env` file:
+```env
+VITE_PUBLIC_DEMO_MODE=false
+```
+
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

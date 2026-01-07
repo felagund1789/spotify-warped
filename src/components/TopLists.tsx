@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useTopArtists, useTopTracks, useTopGenres, useTopAlbums } from "../api/spotify";
-import GenreList from "./GenreList";
-import ArtistList from "./ArtistList";
-import TrackList from "./TrackList";
+import { useMusic } from "../providers/MusicProvider";
+import { TimeRange } from "../services/MusicService";
 import AlbumList from "./AlbumList";
-import WarpLoading from "./WarpLoading";
+import ArtistList from "./ArtistList";
 import Carousel from "./Carousel";
+import { DemoBanner } from "./DemoBanner";
 import ErrorMessage from "./ErrorMessage";
+import GenreList from "./GenreList";
+import TrackList from "./TrackList";
+import WarpLoading from "./WarpLoading";
 
 type ItemList = { name: string; extra?: string }[];
-import { Artist, Track, Album } from "../types";
-
-type TimeRange = 'long_term' | 'medium_term' | 'short_term';
 
 interface TimeRangeOption {
   value: TimeRange;
@@ -24,15 +23,16 @@ const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
   { value: 'short_term', label: '1 Month' }
 ];
 
-export default function TopLists({ token }: { token: string }) {
+export default function TopLists() {
+  const { useTopArtists, useTopTracks, useTopAlbums, useTopGenres } = useMusic();
   const [timeRange, setTimeRange] = useState<TimeRange>('long_term');
   const [retryKey, setRetryKey] = useState(0);
   
   // Use React Query hooks for data fetching
-  const artistsQuery = useTopArtists(token, 5, timeRange);
-  const tracksQuery = useTopTracks(token, 5, timeRange);
-  const albumsQuery = useTopAlbums(token, 5, timeRange);
-  const genresQuery = useTopGenres(token, 5, timeRange);
+  const artistsQuery = useTopArtists(5, timeRange);
+  const tracksQuery = useTopTracks(5, timeRange);
+  const albumsQuery = useTopAlbums(5, timeRange);
+  const genresQuery = useTopGenres(5, timeRange);
   
   // Extract data from queries
   const artists = artistsQuery.data || [];
@@ -77,6 +77,7 @@ export default function TopLists({ token }: { token: string }) {
 
   return (
     <div className="carousel-container">
+      <DemoBanner />
       <div className="carousel-header">
         <h1>Spotify Warped</h1>
         <p>Warp through time and revisit your top tunes</p>

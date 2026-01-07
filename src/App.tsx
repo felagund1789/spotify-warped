@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { startAuthIfNeeded, handleCallback, getAccessToken, logout } from './api/spotify'
-import TopLists from './components/TopLists'
+import { useEffect, useState } from 'react';
+import TopLists from './components/TopLists';
+import { DEMO_MODE } from './config';
+import { MusicProvider } from './providers/MusicProvider';
+import { getAccessToken, handleCallback, logout, startAuthIfNeeded } from './services/SpotifyService';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null)
@@ -27,17 +29,19 @@ export default function App() {
 
   return (
     <div className="container">
-      {!token ? (
+      {!DEMO_MODE && !token ? (
         <div className="auth-section">
           <h1>Spotify Warped</h1>
           <p>Sign in with Spotify to see your top 5 genres, artists, albums, and tracks.</p>
           <button onClick={() => startAuthIfNeeded()}>Sign in with Spotify</button>
         </div>
       ) : (
-        <div className="app-content">
-          <button className="logout-btn" onClick={() => { logout(); setToken(null); }}>Sign out</button>
-          <TopLists token={token} />
-        </div>
+        <MusicProvider useMockService={ DEMO_MODE}>
+          <div className="app-content">
+            <button className="logout-btn" onClick={logout}>Sign out</button>
+            <TopLists />
+          </div>
+        </MusicProvider>
       )}
       <footer className="app-footer">
         <div className="footer-content">
